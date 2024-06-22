@@ -1,23 +1,39 @@
-import logo from './logo.svg';
-import './App.css';
+// client/src/App.js
+import React, { useState } from 'react';
+import axios from 'axios';
 
 function App() {
+  const [message, setMessage] = useState('');
+  const [response, setResponse] = useState('');
+
+  const handleGreet = async () => {
+    const res = await axios.get('http://localhost:5000/greet');
+    setResponse(res.data);
+  };
+
+  const handleQuery = async () => {
+    const res = await axios.post('http://localhost:5000/query', { question: message });
+    setResponse(res.data.answer);
+  };
+
+  const handleQuestions = async () => {
+    const res = await axios.get('http://localhost:5000/questions');
+    setResponse(res.data.map(q => q.question).join(', '));
+  };
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div>
+      <h1>Chatbot</h1>
+      <button onClick={handleGreet}>Greet</button>
+      <button onClick={handleQuestions}>Show All Questions</button>
+      <input
+        type="text"
+        value={message}
+        onChange={(e) => setMessage(e.target.value)}
+        placeholder="Ask a question"
+      />
+      <button onClick={handleQuery}>Ask</button>
+      <p>Response: {response}</p>
     </div>
   );
 }
